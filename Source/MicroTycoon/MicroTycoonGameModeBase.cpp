@@ -2,9 +2,10 @@
 
 
 #include "MicroTycoonGameModeBase.h"
+#include "PlayerCameraPawn.h"
 
 AMicroTycoonGameModeBase::AMicroTycoonGameModeBase()
 	: Super()
 {
-	
+	DefaultPawnClass = APlayerCameraPawn::StaticClass();
 }
