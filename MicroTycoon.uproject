@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{145A292A-4930-3342-B123-A5A56C21714B}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "MicroTycoon",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
