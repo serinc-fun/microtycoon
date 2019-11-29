@@ -5,9 +5,11 @@
 #include "Components/InputComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/PlayerController.h"
 //==================================================
 //				For Debug Messages
 #include "Engine/Engine.h"
+
 
 APlayerCameraPawn::APlayerCameraPawn()
 {
@@ -22,6 +24,8 @@ APlayerCameraPawn::APlayerCameraPawn()
 
 	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComponent"));
 	MovementComponent->SetUpdatedComponent(SphereComponent);
+
+	TargetZoom = FMath::Lerp(ZoomLimits.X, ZoomLimits.Y, 0.3f);
 	
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -32,6 +36,14 @@ void APlayerCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &APlayerCameraPawn::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &APlayerCameraPawn::MoveRight);
+
+	PlayerInputComponent->BindAxis(TEXT("MoveZoom"), this, &APlayerCameraPawn::MoveZoom);
+
+	PlayerInputComponent->BindAction(TEXT("SpeedSlow"), IE_Pressed, this, &APlayerCameraPawn::SwitchSpeedMode<EInputSpeedMode::Slow>);
+	PlayerInputComponent->BindAction(TEXT("SpeedSlow"), IE_Released, this, &APlayerCameraPawn::SwitchSpeedMode<EInputSpeedMode::Base>);
+	
+	PlayerInputComponent->BindAction(TEXT("SpeedFast"), IE_Pressed, this, &APlayerCameraPawn::SwitchSpeedMode<EInputSpeedMode::Fast>);
+	PlayerInputComponent->BindAction(TEXT("SpeedFast"), IE_Released, this, &APlayerCameraPawn::SwitchSpeedMode<EInputSpeedMode::Base>);
 }
 
 UPawnMovementComponent* APlayerCameraPawn::GetMovementComponent() const
@@ -41,7 +53,22 @@ UPawnMovementComponent* APlayerCameraPawn::GetMovementComponent() const
 
 float APlayerCameraPawn::GetMovementSpeed() const
 {
-	return MovementSpeedBase;
+	switch(SpeedMode) 
+	{		
+		case EInputSpeedMode::Slow: return MovementSpeedSlow;
+		case EInputSpeedMode::Fast: return MovementSpeedFast;
+		default: return MovementSpeedBase;
+	}
+}
+
+float APlayerCameraPawn::GetZoomSpeed() const
+{
+	switch (SpeedMode)
+	{
+		case EInputSpeedMode::Slow: return ZoomSpeedSlow;
+		case EInputSpeedMode::Fast: return ZoomSpeedFast;
+		default: return ZoomSpeedBase;
+	}
 }
 
 void APlayerCameraPawn::MoveForward(float Value)
@@ -80,17 +107,33 @@ void APlayerCameraPawn::MoveRight(float Value)
 
 void APlayerCameraPawn::MoveZoom(float Value)
 {
-	
+	if (!FMath::IsNearlyZero(Value))
+	{
+		TargetZoom = FMath::Clamp(TargetZoom - GetZoomSpeed() * Value, ZoomLimits.X, ZoomLimits.Y);
+
+		GEngine->AddOnScreenDebugMessage(
+			static_cast<uint64>(GetUniqueID() + 3),
+			3.0f,
+			FColorList::OrangeRed,
+			FString::Printf(TEXT("MoveZoom >> TargetZoom: %.2f"), TargetZoom)
+		);
+	}
 }
 
 void APlayerCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (auto MyController = Cast<APlayerController>(GetController()))
+	{
+		MyController->SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false));
+		MyController->bShowMouseCursor = true;
+	}
 }
 
 void APlayerCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SpringArmComponent->TargetArmLength = FMath::FInterpTo(SpringArmComponent->TargetArmLength, TargetZoom, DeltaTime, ZoomSpeedIterp);
 }
