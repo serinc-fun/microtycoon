@@ -22,6 +22,9 @@ public:
 	UPlayerCursorTraceBase();
 	
 	virtual void ToggleTracing(bool Value);
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE FVector GetWolrdPoint() const { return WorldPoint; }
 	
 protected:
 

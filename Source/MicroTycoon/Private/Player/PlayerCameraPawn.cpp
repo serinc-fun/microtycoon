@@ -11,7 +11,9 @@
 //==================================================
 //				For Debug Messages
 #include "Engine/Engine.h"
-
+//==================================================
+#include "TycoonPlayerState.h"
+#include "Buildings/BuildingBase.h"
 
 APlayerCameraPawn::APlayerCameraPawn()
 {
@@ -168,6 +170,34 @@ void APlayerCameraPawn::MoveZoom(float Value)
 void APlayerCameraPawn::OnMainAction()
 {
 	// TODO: Place building, destroy and select code here.
+	switch (CursorMode) 
+	{
+		case EInputCursorMode::Builder:
+		{
+			if (BuildTarget)
+			{
+				if (CursorTraceBuilder && CursorTraceBuilder->IsValidLowLevel())
+				{
+					if (auto MyPlayerState = GetPlayerState<ATycoonPlayerState>())
+					{
+						if (MyPlayerState->GiveResource(-BuildTarget.GetDefaultObject()->GetBuildCost()))
+						{
+							FTransform SpawnTransform(CursorTraceBuilder->GetWolrdPoint());
+							
+							FActorSpawnParameters SpawnParameters;
+							SpawnParameters.Instigator = this;
+							SpawnParameters.Owner = SpawnParameters.Instigator;
+							SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+							GetWorld()->SpawnActor<ABuildingBase>(BuildTarget, SpawnTransform, SpawnParameters);
+						}
+					}
+				}
+				break;
+			}
+		}
+		default: ;
+	}
 }
 
 void APlayerCameraPawn::BeginPlay()

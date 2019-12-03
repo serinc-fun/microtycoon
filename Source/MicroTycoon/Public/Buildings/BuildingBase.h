@@ -15,6 +15,9 @@ public:
 	ABuildingBase();
 
 	void SetIndicatorMaterial(UMaterialInterface* InMaterial);
+
+	UFUNCTION(BlueprintPure, Category = Resource)
+	FORCEINLINE int32 GetBuildCost() const { return TycoonsBuildCost; }
 	
 protected:
 
@@ -27,6 +30,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Description)
 	FText BuildingDescription;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Configuration)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Resource)
 	int32 TycoonsBuildCost;
 };
