@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerCameraPawn.generated.h"
 
+class UPlayerCursorTraceBuilder;
+class UPlayerCursorTraceBase;
 class UFloatingPawnMovement;
 class USphereComponent;
 class UCameraComponent;
@@ -93,5 +95,8 @@ protected:
 	UCameraComponent* CameraComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = Components)
-	UFloatingPawnMovement* MovementComponent;	
+	UFloatingPawnMovement* MovementComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = Components)
+	UPlayerCursorTraceBuilder* CursorTraceBuilder;
 };

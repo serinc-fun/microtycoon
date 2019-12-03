@@ -6,6 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/PlayerController.h"
+#include "PlayerCursorTraceBase.h"
+#include "PlayerCursorTraceBuilder.h"
 //==================================================
 //				For Debug Messages
 #include "Engine/Engine.h"
@@ -28,6 +30,8 @@ APlayerCameraPawn::APlayerCameraPawn()
 	TargetZoom = FMath::Lerp(ZoomLimits.X, ZoomLimits.Y, 0.3f);
 	
 	PrimaryActorTick.bCanEverTick = true;
+	
+	CursorTraceBuilder = CreateDefaultSubobject<UPlayerCursorTraceBuilder>(TEXT("PlayerCursorTraceBuilder"));
 }
 
 void APlayerCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -128,6 +132,8 @@ void APlayerCameraPawn::BeginPlay()
 	{
 		MyController->SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false));
 		MyController->bShowMouseCursor = true;
+
+		CursorTraceBuilder->ToggleTracing(true);
 	}
 }
 
