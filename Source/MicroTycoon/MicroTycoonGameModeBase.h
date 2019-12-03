@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "MicroTycoonGameModeBase.generated.h"
 
+class ABuildingBase;
 /**
  * 
  */
@@ -17,4 +18,7 @@ class MICROTYCOON_API AMicroTycoonGameModeBase : public AGameModeBase
 public:
 
 	AMicroTycoonGameModeBase();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Buildings)
+	TArray<TSubclassOf<ABuildingBase>> AllowedBuildings;
 };

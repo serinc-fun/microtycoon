@@ -15,28 +15,7 @@ void UPlayerCursorTraceBuilder::ToggleTracing(bool Value)
 {
 	Super::ToggleTracing(Value);
 
-	if (bTracingStarted)
-	{
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Instigator = Cast<APawn>(GetOwner());
-		SpawnParameters.Owner = SpawnParameters.Instigator;
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		
-		Building = GetWorld()->SpawnActor<ABuildingBase>(BuldingTemplate, SpawnParameters);
-		if (Building && Building->IsValidLowLevel())
-		{
-			Building->SetActorEnableCollision(false);
-			Building->SetIndicatorMaterial(Indicator);
-		}
-	}
-	else
-	{
-		if (Building && Building->IsValidLowLevel())
-		{
-			Building->Destroy();
-			Building = nullptr;
-		}
-	}
+	RefreshBuilding();
 }
 
 void UPlayerCursorTraceBuilder::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -48,6 +27,36 @@ void UPlayerCursorTraceBuilder::TickComponent(float DeltaTime, ELevelTick TickTy
 		if (Building && Building->IsValidLowLevel())
 		{
 			Building->SetActorLocation(WorldPoint);
+		}
+	}
+}
+
+void UPlayerCursorTraceBuilder::SetBuildingClass(TSubclassOf<ABuildingBase> InBuildingClass)
+{
+	BuldingTemplate = InBuildingClass;
+	RefreshBuilding();
+}
+
+void UPlayerCursorTraceBuilder::RefreshBuilding()
+{
+	if (Building && Building->IsValidLowLevel())
+	{
+		Building->Destroy();
+		Building = nullptr;
+	}
+
+	if (bTracingStarted)
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Instigator = Cast<APawn>(GetOwner());
+		SpawnParameters.Owner = SpawnParameters.Instigator;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		Building = GetWorld()->SpawnActor<ABuildingBase>(BuldingTemplate, SpawnParameters);
+		if (Building && Building->IsValidLowLevel())
+		{
+			Building->SetActorEnableCollision(false);
+			Building->SetIndicatorMaterial(Indicator);
 		}
 	}
 }

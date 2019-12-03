@@ -32,6 +32,9 @@ enum class EInputCursorMode : uint8
 	End UMETA(Hidden)
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCursorModeChanged, EInputCursorMode, Mode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildingSelected, TSubclassOf<ABuildingBase>, BuildingClass);
+
 UCLASS()
 class MICROTYCOON_API APlayerCameraPawn : public APawn
 {
@@ -61,6 +64,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = Gameplay)
 	FORCEINLINE EInputCursorMode GetCursorMode() const { return CursorMode; }
+
+	UPROPERTY(BlueprintAssignable, Category = Events)
+	FOnCursorModeChanged OnCursorModeChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = Events)
+	FOnBuildingSelected OnBuildingSelected;
 	
 protected:
 
@@ -112,6 +121,8 @@ protected:
 	{
 		SpeedMode = Value;
 	}
+
+	void OnMainAction();
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -130,4 +141,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Components)
 	UPlayerCursorTraceBuilder* CursorTraceBuilder;
+
+	UPROPERTY(VisibleAnywhere, Category = Components)
+	UPlayerCursorTraceBase* CursorTraceBase;
 };

@@ -21,12 +21,12 @@ protected:
 	UPROPERTY(Transient)
 	UMaterialInterface* IndicatorMaterial;
 
-	UPROPERTY(EditDefaultsOnly, Category = Description)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Description)
 	FText BuildingName;
 
-	UPROPERTY(EditDefaultsOnly, Category = Description)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Description)
 	FText BuildingDescription;
 
-	UPROPERTY(EditDefaultsOnly, Category = Configuration)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Configuration)
 	int32 TycoonsBuildCost;
 };

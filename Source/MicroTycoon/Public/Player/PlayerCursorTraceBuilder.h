@@ -23,6 +23,9 @@ public:
 	virtual void ToggleTracing(bool Value) override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable, Category = Building)
+	void SetBuildingClass(TSubclassOf<ABuildingBase> InBuildingClass);
+	
 protected:
 
 	UPROPERTY(Transient)
@@ -33,4 +36,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = Template)
 	UMaterialInterface* Indicator;
+
+	void RefreshBuilding();
 };

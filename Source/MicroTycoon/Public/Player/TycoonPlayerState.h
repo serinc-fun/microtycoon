@@ -20,6 +20,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = Resource)
 	FORCEINLINE int32 GetCurrentResource() const { return Tycoons; }
+
+	UFUNCTION(BlueprintCallable, Category = Resource)
+	bool GiveResource(const int32& InResource);
 	
 protected:
 	

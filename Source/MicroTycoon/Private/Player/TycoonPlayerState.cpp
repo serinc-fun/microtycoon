@@ -8,3 +8,11 @@ ATycoonPlayerState::ATycoonPlayerState()
 {
 	
 }
+
+bool ATycoonPlayerState::GiveResource(const int32& InResource)
+{
+	int32 Result = Tycoons + InResource;	
+	if (Result < 0) return false;
+	Tycoons = Result;
+	return true;
+}

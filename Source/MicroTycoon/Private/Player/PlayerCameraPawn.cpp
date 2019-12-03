@@ -32,6 +32,7 @@ APlayerCameraPawn::APlayerCameraPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	CursorTraceBuilder = CreateDefaultSubobject<UPlayerCursorTraceBuilder>(TEXT("PlayerCursorTraceBuilder"));
+	CursorTraceBase = CreateDefaultSubobject<UPlayerCursorTraceBase>(TEXT("PlayerCursorTraceBase"));
 }
 
 void APlayerCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -48,6 +49,8 @@ void APlayerCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	
 	PlayerInputComponent->BindAction(TEXT("SpeedFast"), IE_Pressed, this, &APlayerCameraPawn::SwitchSpeedMode<EInputSpeedMode::Fast>);
 	PlayerInputComponent->BindAction(TEXT("SpeedFast"), IE_Released, this, &APlayerCameraPawn::SwitchSpeedMode<EInputSpeedMode::Base>);
+
+	PlayerInputComponent->BindAction(TEXT("MainAction"), IE_Pressed, this, &APlayerCameraPawn::OnMainAction);
 }
 
 UPawnMovementComponent* APlayerCameraPawn::GetMovementComponent() const
@@ -81,8 +84,10 @@ void APlayerCameraPawn::SetCurrentBuildingTarget(TSubclassOf<ABuildingBase> InBu
 
 	if (CursorMode == EInputCursorMode::Builder)
 	{
-		// TODO: Setup build target class to ghost
+		CursorTraceBuilder->SetBuildingClass(BuildTarget);
 	}
+
+	OnBuildingSelected.Broadcast(BuildTarget);
 }
 
 void APlayerCameraPawn::SetCursorMode(EInputCursorMode InMode)
@@ -99,16 +104,16 @@ void APlayerCameraPawn::SetCursorMode(EInputCursorMode InMode)
 		case EInputCursorMode::Builder:
 			CurrentCursorTrace = CursorTraceBuilder;
 		break;
-		case EInputCursorMode::Destroyer:
-		
-		break;
-		default: ;
+		default:
+			CurrentCursorTrace = CursorTraceBase;
 	}
 
 	if (CurrentCursorTrace && CurrentCursorTrace->IsValidLowLevel())
 	{
 		CurrentCursorTrace->ToggleTracing(true);
 	}
+
+	OnCursorModeChanged.Broadcast(CursorMode);
 }
 
 void APlayerCameraPawn::MoveForward(float Value)
@@ -160,6 +165,11 @@ void APlayerCameraPawn::MoveZoom(float Value)
 	}
 }
 
+void APlayerCameraPawn::OnMainAction()
+{
+	// TODO: Place building, destroy and select code here.
+}
+
 void APlayerCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
@@ -168,8 +178,6 @@ void APlayerCameraPawn::BeginPlay()
 	{
 		MyController->SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false));
 		MyController->bShowMouseCursor = true;
-
-		CursorTraceBuilder->ToggleTracing(true);
 	}
 }
 
