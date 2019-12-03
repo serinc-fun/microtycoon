@@ -75,6 +75,42 @@ float APlayerCameraPawn::GetZoomSpeed() const
 	}
 }
 
+void APlayerCameraPawn::SetCurrentBuildingTarget(TSubclassOf<ABuildingBase> InBuildingClass)
+{
+	BuildTarget = InBuildingClass;
+
+	if (CursorMode == EInputCursorMode::Builder)
+	{
+		// TODO: Setup build target class to ghost
+	}
+}
+
+void APlayerCameraPawn::SetCursorMode(EInputCursorMode InMode)
+{
+	CursorMode = InMode;
+
+	if (CurrentCursorTrace && CurrentCursorTrace->IsValidLowLevel())
+	{
+		CurrentCursorTrace->ToggleTracing(false);
+	}
+	
+	switch (CursorMode) 
+	{
+		case EInputCursorMode::Builder:
+			CurrentCursorTrace = CursorTraceBuilder;
+		break;
+		case EInputCursorMode::Destroyer:
+		
+		break;
+		default: ;
+	}
+
+	if (CurrentCursorTrace && CurrentCursorTrace->IsValidLowLevel())
+	{
+		CurrentCursorTrace->ToggleTracing(true);
+	}
+}
+
 void APlayerCameraPawn::MoveForward(float Value)
 {
 	if (!FMath::IsNearlyZero(Value))

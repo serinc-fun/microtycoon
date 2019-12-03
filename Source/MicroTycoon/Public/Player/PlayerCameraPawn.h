@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerCameraPawn.generated.h"
 
+class ABuildingBase;
 class UPlayerCursorTraceBuilder;
 class UPlayerCursorTraceBase;
 class UFloatingPawnMovement;
@@ -19,6 +20,15 @@ enum class EInputSpeedMode : uint8
 	Base,
 	Slow,
 	Fast,
+	End UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EInputCursorMode : uint8
+{
+	Selector,
+	Builder,
+	Destroyer,
 	End UMETA(Hidden)
 };
 
@@ -39,6 +49,18 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = Input)
 	float GetZoomSpeed() const;
+
+	UFUNCTION(BlueprintCallable, Category = Gameplay)
+	void SetCurrentBuildingTarget(TSubclassOf<ABuildingBase> InBuildingClass);
+
+	UFUNCTION(BlueprintPure, Category = Gameplay)
+	FORCEINLINE TSubclassOf<ABuildingBase> GetCurrentBuildingTarget() const { return BuildTarget; }
+	
+	UFUNCTION(BlueprintCallable, Category = Gameplay)
+	void SetCursorMode(EInputCursorMode InMode);
+
+	UFUNCTION(BlueprintPure, Category = Gameplay)
+	FORCEINLINE EInputCursorMode GetCursorMode() const { return CursorMode; }
 	
 protected:
 
@@ -71,6 +93,15 @@ protected:
 
 	UPROPERTY(Transient)
 	EInputSpeedMode SpeedMode = EInputSpeedMode::Base;
+
+	UPROPERTY(Transient)
+	EInputCursorMode CursorMode = EInputCursorMode::Selector;
+	
+	UPROPERTY(Transient)
+	TSubclassOf<ABuildingBase> BuildTarget;
+
+	UPROPERTY(Transient)
+	UPlayerCursorTraceBase* CurrentCursorTrace;
 	
 	void MoveForward(float Value);
 	void MoveRight(float Value);
