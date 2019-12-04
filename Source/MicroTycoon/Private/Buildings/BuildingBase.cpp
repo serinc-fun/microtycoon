@@ -29,19 +29,28 @@ void ABuildingBase::SetIndicatorMaterial(UMaterialInterface* InMaterial)
 
 void ABuildingBase::StartBuild()
 {
-	if (BuildingState == EBuildingState::Ghost)
+	if (GetState() == EBuildingState::Ghost)
 	{
-		BuildingState = EBuildingState::Build;
+		SetStateInternal(BuildingState = EBuildingState::Build);
 		GetWorld()->GetTimerManager().SetTimer(BuildFinishedTimerHandle, this, &ABuildingBase::OnBuildFinished, BuildTime);
 	}
 }
 
 void ABuildingBase::StartDestroy()
 {
-	
+	if (GetState() == EBuildingState::Builded)
+	{
+		SetStateInternal(EBuildingState::Destroy);
+	}
 }
 
 void ABuildingBase::OnBuildFinished()
 {
-	BuildingState = EBuildingState::Builded;
+	SetStateInternal(EBuildingState::Builded);
+}
+
+void ABuildingBase::SetStateInternal(EBuildingState InState)
+{
+	BuildingState = InState;
+	OnBuildingStateChanged.Broadcast(BuildingState);
 }

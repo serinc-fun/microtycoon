@@ -83,12 +83,8 @@ float APlayerCameraPawn::GetZoomSpeed() const
 void APlayerCameraPawn::SetCurrentBuildingTarget(TSubclassOf<ABuildingBase> InBuildingClass)
 {
 	BuildTarget = InBuildingClass;
-
-	if (CursorMode == EInputCursorMode::Builder)
-	{
-		CursorTraceBuilder->SetBuildingClass(BuildTarget);
-	}
-
+	
+	CursorTraceBuilder->SetBuildingClass(BuildTarget);
 	OnBuildingSelected.Broadcast(BuildTarget);
 }
 

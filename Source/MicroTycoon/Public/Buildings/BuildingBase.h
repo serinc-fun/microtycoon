@@ -16,6 +16,8 @@ enum class EBuildingState : uint8
 	End UMETA(Hidden)
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildingStateChanged, EBuildingState, State);
+
 UCLASS()
 class MICROTYCOON_API ABuildingBase : public AActor
 {
@@ -40,6 +42,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Gameplay)
 	void StartDestroy();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnBuildingStateChanged OnBuildingStateChanged;
 	
 protected:
 
@@ -63,6 +68,9 @@ protected:
 
 	UFUNCTION()
 	virtual void OnBuildFinished();
+
+	UFUNCTION()
+	void SetStateInternal(EBuildingState InState);
 
 	FTimerHandle BuildFinishedTimerHandle;
 };
