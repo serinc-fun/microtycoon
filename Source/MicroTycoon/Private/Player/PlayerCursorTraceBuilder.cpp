@@ -27,6 +27,16 @@ void UPlayerCursorTraceBuilder::TickComponent(float DeltaTime, ELevelTick TickTy
 		if (Building && Building->IsValidLowLevel())
 		{
 			Building->SetActorLocation(WorldPoint);
+			
+			FVector BoundsOrigin;
+			FVector BoundsExtent;			
+			Building->GetActorBounds(true, BoundsOrigin, BoundsExtent);
+			
+			FHitResult HitResult;
+			GetWorld()->SweepSingleByChannel(HitResult, BoundsOrigin, BoundsOrigin + FVector::UpVector, FQuat::Identity, ECC_WorldDynamic, FCollisionShape::MakeBox(BoundsExtent));
+
+			bAllowBuild = Cast<ABuildingBase>(HitResult.GetActor()) == nullptr;
+			Building->SetIndicatorMaterial(bAllowBuild ? IndicatorAllow : IndicatorDisallow);
 		}
 	}
 }
@@ -56,7 +66,7 @@ void UPlayerCursorTraceBuilder::RefreshBuilding()
 		if (Building && Building->IsValidLowLevel())
 		{
 			Building->SetActorEnableCollision(false);
-			Building->SetIndicatorMaterial(Indicator);
+			Building->SetIndicatorMaterial(IndicatorAllow);
 		}
 	}
 }

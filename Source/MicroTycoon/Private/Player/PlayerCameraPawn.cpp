@@ -176,7 +176,7 @@ void APlayerCameraPawn::OnMainAction()
 		{
 			if (BuildTarget)
 			{
-				if (CursorTraceBuilder && CursorTraceBuilder->IsValidLowLevel())
+				if (CursorTraceBuilder && CursorTraceBuilder->IsValidLowLevel() && CursorTraceBuilder->IsAllowBuild())
 				{
 					if (auto MyPlayerState = GetPlayerState<ATycoonPlayerState>())
 					{
@@ -189,7 +189,11 @@ void APlayerCameraPawn::OnMainAction()
 							SpawnParameters.Owner = SpawnParameters.Instigator;
 							SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-							GetWorld()->SpawnActor<ABuildingBase>(BuildTarget, SpawnTransform, SpawnParameters);
+							auto SpawnedBulding = GetWorld()->SpawnActor<ABuildingBase>(BuildTarget, SpawnTransform, SpawnParameters);
+							if (SpawnedBulding && SpawnedBulding->IsValidLowLevel())
+							{
+								SpawnedBulding->StartBuild();
+							}
 						}
 					}
 				}

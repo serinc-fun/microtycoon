@@ -6,6 +6,16 @@
 #include "GameFramework/Actor.h"
 #include "BuildingBase.generated.h"
 
+UENUM(BlueprintType)
+enum class EBuildingState : uint8
+{
+	Ghost,
+	Build,
+	Builded,
+	Destroy,
+	End UMETA(Hidden)
+};
+
 UCLASS()
 class MICROTYCOON_API ABuildingBase : public AActor
 {
@@ -18,11 +28,26 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = Resource)
 	FORCEINLINE int32 GetBuildCost() const { return TycoonsBuildCost; }
+
+	UFUNCTION(BlueprintPure, Category = Resource)
+	FORCEINLINE float GetBuildTime() const { return BuildTime; }
+
+	UFUNCTION(BlueprintPure, Category = Gameplay)
+	FORCEINLINE EBuildingState GetState() const { return BuildingState; }
+	
+	UFUNCTION(BlueprintCallable, Category = Gameplay)
+	void StartBuild();
+
+	UFUNCTION(BlueprintCallable, Category = Gameplay)
+	void StartDestroy();
 	
 protected:
 
 	UPROPERTY(Transient)
 	UMaterialInterface* IndicatorMaterial;
+
+	UPROPERTY(Transient)
+	EBuildingState BuildingState = EBuildingState::Ghost;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Description)
 	FText BuildingName;
@@ -32,4 +57,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Resource)
 	int32 TycoonsBuildCost;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Configuration)
+	float BuildTime = 3.0f;
+
+	UFUNCTION()
+	virtual void OnBuildFinished();
+
+	FTimerHandle BuildFinishedTimerHandle;
 };

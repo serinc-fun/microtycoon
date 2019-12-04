@@ -25,9 +25,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Building)
 	void SetBuildingClass(TSubclassOf<ABuildingBase> InBuildingClass);
+
+	UFUNCTION(BlueprintPure, Category = Building)
+	FORCEINLINE bool IsAllowBuild() const { return bAllowBuild; }
 	
 protected:
 
+	UPROPERTY(Transient)
+	bool bAllowBuild = false;
+	
 	UPROPERTY(Transient)
 	ABuildingBase* Building;
 
@@ -35,7 +41,10 @@ protected:
 	TSubclassOf<ABuildingBase> BuldingTemplate;
 
 	UPROPERTY(EditDefaultsOnly, Category = Template)
-	UMaterialInterface* Indicator;
+	UMaterialInterface* IndicatorAllow;
+
+	UPROPERTY(EditDefaultsOnly, Category = Template)
+	UMaterialInterface* IndicatorDisallow;
 
 	void RefreshBuilding();
 };
