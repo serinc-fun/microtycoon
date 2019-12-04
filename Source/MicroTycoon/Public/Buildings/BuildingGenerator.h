@@ -18,7 +18,7 @@ public:
 
 	ABuildingGenerator();
 
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
 
 	UFUNCTION(BlueprintPure)
 	float GetGeneratedPercent() const;

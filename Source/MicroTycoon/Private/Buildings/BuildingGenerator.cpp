@@ -6,18 +6,18 @@
 ABuildingGenerator::ABuildingGenerator()
 	: Super()
 {
-
+	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ABuildingGenerator::Tick(float DeltaSeconds)
+void ABuildingGenerator::TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction)
 {
-	Super::Tick(DeltaSeconds);
+	Super::TickActor(DeltaTime, TickType, ThisTickFunction);
 
 	if (GetState() == EBuildingState::Builded)
 	{
-		if (!FMath::IsNearlyEqual(Generated, InternalWarehouse))
+		if (Generated < InternalWarehouse)
 		{
-			Generated += (float(GeneratePerMin) * DeltaSeconds) / 60.0f;
+			Generated = FMath::Clamp<float>(Generated + (float(GeneratePerMin) * DeltaTime) / 60.0f, .0f, InternalWarehouse);
 		}
 	}
 }
@@ -35,7 +35,4 @@ float ABuildingGenerator::GetGeneratedPercent() const
 void ABuildingGenerator::OnBuildFinished()
 {
 	Super::OnBuildFinished();
-
-	PrimaryActorTick.bCanEverTick = true;
-	SetActorTickEnabled(true);
 }
